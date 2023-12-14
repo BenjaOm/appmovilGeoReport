@@ -1,0 +1,25 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Carabineros de Chile - Plan Cuadrante Area Central Copiapó",
+                "amenity": "Police Station",
+                "police": "Carabineros de Chile"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [-70.337158203125, -27.38172778132606],
+                        [-70.3306655883789, -27.38172778132606],
+                        [-70.3306655883789, -27.367889602505777],
+                        [-70.337158203125, -27.367889602505777],
+                        [-70.337158203125, -27.38172778132606]
+                    ]
+                ]
+            }
+        }
+    ]
+}
