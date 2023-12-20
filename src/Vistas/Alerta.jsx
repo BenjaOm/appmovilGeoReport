@@ -1,20 +1,23 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Alert, TouchableOpacity, Text, Image } from 'react-native';
 import { Input, Button, ThemeProvider, Divider } from 'react-native-elements';
-import RNPickerSelect from 'react-native-picker-select';
 import { Camera } from 'expo-camera';
 import * as DocumentPicker from 'expo-document-picker';
-import { Picker } from '@react-native-picker/picker';
+import axios from 'axios';
+import * as Location from 'expo-location';
 
-const Alerta = () => {
+const Alerta = ({ route }) => {
   const [descripcion, setDescripcion] = useState('');
-  const [ubicacion, setUbicacion] = useState('');
+  const [ubicacion, setUbicacion] = useState(null);
+  const [tipoDelito, setTipoDelito] = useState('');
   const [informacionAdicional, setInformacionAdicional] = useState('');
   const [foto, setFoto] = useState(null);
   const [documento, setDocumento] = useState(null);
   const [tienePermiso, setTienePermiso] = useState(null);
   const cameraRef = useRef(null);
-
+  const [isCameraReady, setIsCameraReady] = useState(false);
+  const [nombreUsuario, setNombreUsuario] = useState('');
+  const [correoUsuario, setCorreoUsuario] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -23,25 +26,53 @@ const Alerta = () => {
     })();
   }, []);
 
-  const manejarEnvio = () => {
-    console.log('Descripción:', descripcion);
-    console.log('Ubicación:', ubicacion);
-    console.log('Información Adicional:', informacionAdicional);
-    console.log('Foto:', foto);
-    console.log('Documento:', documento);
-    ('');
-    setDescripcion('');
-    setUbicacion('');
-    setInformacionAdicional('');
-    setFoto(null);
-    setDocumento(null);
-  };
+  useEffect(() => {
+    if (route.params?.ubicacionActual) {
+      const { latitude, longitude } = route.params.ubicacionActual;
+      // Formatea la ubicación como un objeto
+      setUbicacion({ latitud: latitude, longitud: longitude });
+    }
+  }, [route.params?.ubicacionActual]);
 
+  const manejarEnvio = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('descripcion', descripcion);
+      formData.append('tipoDelito', tipoDelito);
+      formData.append('informacionAdicional', informacionAdicional);
+      formData.append('ubicacion', JSON.stringify(ubicacion)); // Convierte ubicación a JSON
+      formData.append('foto', foto);
+      formData.append('documento', documento);
+
+      // Agrega el nombre y correo del usuario
+      formData.append('nombreUsuario', nombreUsuario);
+      formData.append('correoUsuario', correoUsuario);
+
+      const response = await axios.post('http://192.168.0.8:3001/api/denuncias', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.status === 200) {
+        Alert.alert('Éxito', 'Denuncia registrada con éxito');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Error al registrar la denuncia');
+    }
+  };
+  
   const tomarFoto = async () => {
-    if (cameraRef.current) {
-      const options = { quality: 0.5, base64: true };
-      const data = await cameraRef.current.takePictureAsync(options);
-      setFoto(data.uri);
+    if (cameraRef.current && isCameraReady) {
+      try {
+        const options = { quality: 0.5, base64: true };
+        const data = await cameraRef.current.takePictureAsync(options);
+        setFoto(data.uri);
+      } catch (error) {
+        console.error("Error al tomar foto:", error);
+      }
+    } else {
+      Alert.alert('Error', 'La cámara no está lista');
     }
   };
 
@@ -64,7 +95,6 @@ const Alerta = () => {
       <ScrollView contentContainerStyle={estilos.contenedor}>
         <Text h4 style={estilos.titulo}>Formulario de Alerta</Text>
 
-
         <Input
           placeholder="Descripción del incidente"
           value={descripcion}
@@ -73,10 +103,11 @@ const Alerta = () => {
         />
 
         <Input
-          placeholder="Ubicación del incidente"
-          value={ubicacion}
-          onChangeText={setUbicacion}
+          placeholder="Tipo Delito (De un indicio del delito)"
+          value={tipoDelito}
+          onChangeText={setTipoDelito}
           containerStyle={estilos.entrada}
+          multiline
         />
 
         <Input
@@ -87,11 +118,16 @@ const Alerta = () => {
           multiline
         />
 
-        <Camera
-          ref={cameraRef}
-          style={estilos.preview}
-          type={Camera.Constants.Type.back}
-        />
+        {tienePermiso ? (
+          <Camera
+            ref={cameraRef}
+            style={estilos.preview}
+            type={Camera.Constants.Type.back}
+            onCameraReady={() => setIsCameraReady(true)}
+          />
+        ) : (
+          <Text>No hay acceso a la cámara</Text>
+        )}
 
         <View style={estilos.botonesCamara}>
           <TouchableOpacity onPress={tomarFoto} style={estilos.botonCamara}>
@@ -118,6 +154,8 @@ const Alerta = () => {
     </ThemeProvider>
   );
 };
+
+export default Alerta;
 
 
 const estilos = StyleSheet.create({
@@ -226,4 +264,4 @@ const pickerSelectStyles = {
   },
 };
 
-export default Alerta;
+

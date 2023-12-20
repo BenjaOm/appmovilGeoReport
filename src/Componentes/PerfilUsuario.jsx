@@ -1,51 +1,162 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const PerfilUsuario = () => {
   const navigation = useNavigation();
 
+  // Datos de ejemplo, reemplazar con datos reales del usuario
+  const userInfo = {
+    nombre: "Nombre del Usuario",
+    email: "correo@ejemplo.com",
+    imagenPerfil: "url_de_la_imagen_del_perfil",
+    direccion: "Dirección del Usuario",
+    rut: "RUT del Usuario",
+    denunciasRealizadas: 5,
+  };
+  
+  const handleEdit = (field) => {
+    // Lógica para manejar la edición de cada campo
+    console.log(`Editando ${field}`);
+  };
+
+  const cerrarSesion = () => {
+    // Aquí iría la lógica para cerrar la sesión
+    // Por ejemplo, limpiar tokens, actualizar el estado global, etc.
+
+    // Redirigir al usuario a la pantalla de inicio de sesión
+    navigation.navigate('Login');
+  };
   return (
-    <View style={{ flex: 1 }}>
-      {/* Encabezado Personalizado */}
+    <ScrollView style={{ flex: 1 }}>
+    <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backButtonText}>{"< Volver"}</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Perfil del Usuario</Text>
+        <Image
+          source={{ uri: userInfo.imagenPerfil }}
+          style={styles.imagenPerfil}
+        />
+        <Text style={styles.nombre}>{userInfo.nombre}</Text>
+        <Text style={styles.email}>{userInfo.email}</Text>
       </View>
 
-      {/* Contenido de la pantalla */}
-      {/* ... */}
+      <View style={styles.body}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Dirección</Text>
+          <Text style={styles.cardContent}>{userInfo.direccion}</Text>
+          <TouchableOpacity style={styles.editIcon} onPress={() => handleEdit('direccion')}>
+            <MaterialIcons name="edit" size={24} color="#1E90FF" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>RUT</Text>
+          <Text style={styles.cardContent}>{userInfo.rut}</Text>
+          <TouchableOpacity style={styles.editIcon} onPress={() => handleEdit('rut')}>
+            <MaterialIcons name="edit" size={24} color="#1E90FF" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Denuncias Realizadas</Text>
+          <Text style={styles.cardContent}>{userInfo.denunciasRealizadas}</Text>
+          <TouchableOpacity style={styles.editIcon} onPress={() => handleEdit('denunciasRealizadas')}>
+            <MaterialIcons name="edit" size={24} color="#1E90FF" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <TouchableOpacity style={styles.botonCerrarSesion} onPress={cerrarSesion}>
+          <Text style={styles.textoBoton}>Cerrar Sesión</Text>
+        </TouchableOpacity>
     </View>
+  </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+
+  },
+  editIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+  },
   header: {
-    height: 60, // Ajusta esto según tus necesidades
-    backgroundColor: 'white', // Color de fondo del encabezado
-    justifyContent: 'center',
+    backgroundColor: '#1E90FF', // Degradado azul
+    width: '100%',
+    paddingBottom: 20,
     alignItems: 'center',
-    borderBottomWidth: 1, // Opcional: borde para el encabezado
-    borderBottomColor: '#cccccc',
-    paddingTop: 0, //  no haya padding superior
-    marginTop: 0, //  no haya margen superior
-  
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    // Se puede agregar un degradado real usando una biblioteca externa como react-native-linear-gradient
   },
-  headerTitle: {
-    fontSize: 20,
+  imagenPerfil: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginTop: 20,
+  },
+  nombre: {
+    fontSize: 24,
     fontWeight: 'bold',
-    position: 'absolute', // Posiciona absolutamente el título
-    top: 10, // Ajusta la altura según tus necesidades
+    color: '#fff',
+    marginTop: 10,
   },
-  backButton: {
-    position: 'absolute', // Posiciona absolutamente el botón de retroceso
-    left: 10, // Ajusta según tus necesidades
-    top: 10, // Ajusta la altura según tus necesidades
+  email: {
+    fontSize: 18,
+    color: '#fff',
   },
-  backButtonText: {
+  body: {
+    flex: 1,
+    width: '100%',
+    paddingTop: 20,
+    alignItems: 'center',
+  },
+  card: {
+    backgroundColor: '#fff',
+    width: '90%',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 5,
+  },
+  cardContent: {
     fontSize: 16,
+    color: '#555',
+  },
+  botonEditar: {
+    backgroundColor: '#4CAF50',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    width: '90%',
+  },
+  botonCerrarSesion: {
+    backgroundColor: '#f44336',
+    padding: 15,
+    borderRadius: 10,
+    width: '90%',
+    left: 20,
+    marginTop: 200,
+  },
+  textoBoton: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 

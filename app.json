@@ -11,31 +11,38 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
+      "bundleIdentifier": "com.SafeAlert.appmovil",
       "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyBRaqbsHq9LmqM19j_XKaGqw1QAAH2pUWw"
-        }
       },
       "supportsTablet": true
     },
     "android": {
+      "package": "com.tuempresa.appmovil",
       "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyBRaqbsHq9LmqM19j_XKaGqw1QAAH2pUWw"
-        }
       },
-    
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "versionCode": 1,
+      "permissions": []
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "backgroundColor": "#ffffff",
+      "lang": "es"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "899c73f4-4256-4d5f-96a1-d0182ac6e955"
+      }
     }
   }
 }

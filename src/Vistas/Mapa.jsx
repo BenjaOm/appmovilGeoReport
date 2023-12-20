@@ -4,6 +4,7 @@ import MapView, { Marker, Polygon } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useNavigation } from '@react-navigation/native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { Platform } from 'react-native';
 
 import cuadranteGeoJSON from '../GeoJson/PlanCuadrante.geojson';
 
@@ -45,9 +46,13 @@ const Mapa = () => {
   }, []);
 
   const handleAlertPress = () => {
-    navigation.navigate('Alerta');
+    if (location) {
+      navigation.navigate('Alerta', { ubicacionActual: `${location.latitude}, ${location.longitude}` });
+    } else {
+      Alert.alert('Ubicación no disponible', 'No se puede obtener la ubicación actual.');
+    }
   };
-
+  
   const handleLayerPress = () => {
     setIsLayerModalVisible(true);
   };
@@ -166,7 +171,7 @@ const Mapa = () => {
         style={styles.alertButton}
         onPress={handleAlertPress}
       >
-        <Text style={styles.alertButtonText}>Alertar</Text>
+        <Text style={styles.alertButtonText}>Reportar</Text>
       </TouchableOpacity>
 
       <Modal
@@ -207,7 +212,7 @@ const Mapa = () => {
 const styles = StyleSheet.create({
   alertButton: {
     position: 'absolute',
-    bottom: 16,
+    bottom: 80, // Ajusta esta cantidad para mover el botón más arriba
     left: 179,
     backgroundColor: 'red',
     padding: 12,
@@ -219,7 +224,7 @@ const styles = StyleSheet.create({
   },
   layerButton: {
     position: 'absolute',
-    top: 50,
+    top: 10, // Ajusta esta cantidad para mover el botón "Layer" más arriba
     left: 16,
     backgroundColor: 'blue',
     padding: 12,

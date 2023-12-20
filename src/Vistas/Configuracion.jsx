@@ -47,7 +47,12 @@ const Configuracion = () => {
         <Text style={styles.optionText}>Acerca de / Ayuda</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.option} onPress={() => {/* Cerrar sesión */}}>
+      <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('ConsejosSeguridad')}>
+        <Text style={styles.optionText}>Consejos Seguridad</Text>
+      </TouchableOpacity>
+      
+
+      <TouchableOpacity style={styles.option} onPress={() => navigation.navigate('CerrarSesion')}>
         <Text style={styles.optionText}>Cerrar Sesión</Text>
       </TouchableOpacity>
     </ScrollView>

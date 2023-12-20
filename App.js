@@ -10,79 +10,66 @@ import Chatbot from './src/Vistas/Chatbot';
 import Configuracion from './src/Vistas/Configuracion';
 import HistorialActividades from './src/Vistas/HistorialActividades';
 import PerfilUsuario from './src/Componentes/PerfilUsuario';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import ConsejosSeguridad from './src/Vistas/ConsejosSeguridad';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import * as Sentry from "@sentry/react-native";
+import NavegacionTab from './src/Navegacion/NavegacionTab';
+import CerrarSesion from './src/Componentes/CerrarSesion';
+import RegistroUsuarios from './src/Vistas/RegistroUsuarios';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
+Sentry.init({
+  dsn: "https://f74eaf21d47d4d37d3879226de9bc97d@o4506402180956160.ingest.sentry.io/4506402182463488",  // Additional Sentry configuration options can be added here
+});
 
 
-
-
-function ConfiguracionStack() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen 
-      name="ConfiguracionScreen" 
-      component={Configuracion}
-      options={{ headerTitle: '' }} // Título personalizado
-      />
-      <Stack.Screen name="HistorialActividades" component={HistorialActividades} />
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="PerfilUsuario" component={PerfilUsuario} />
-      <Stack.Screen name="Alerta" component={Alerta} />
-      <Stack.Screen name="Chatbot" component={Chatbot} />
-      <Stack.Screen name="Mapa" component={Mapa} />
-
-
-
-
-
-      {/* Más pantallas si es necesario */}
-    </Stack.Navigator>
-  );
-}
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
-      
-            if (route.name === 'Inicio') {
-              iconName = focused ? 'home' : 'home';
-            } else if (route.name === 'Mapa') {
-              iconName = focused ? 'map' : 'map';
-            } else if (route.name === 'ConfiguracionTab') {
-              iconName = focused ? 'settings' : 'settings';
-            } else if (route.name === 'Alerta') {
-              iconName = focused ? 'warning' : 'warning';
-            }
-            // Añade más condiciones para otras pestañas si es necesario
-      
-            // Usa el icono de MaterialIcons
-            return <MaterialIcons name={iconName} size={size} color={color} />;
-          },
-        })}
-      >
-        <Tab.Screen name="Inicio" component={Inicio} />
-
-        <Tab.Screen name="Alerta" component={Alerta} />
-
-        
-        <Tab.Screen name="Mapa" component={Mapa} />
-        {/* Las demás pestañas */}
-        <Tab.Screen 
-        name="ConfiguracionTab" 
-        component={ConfiguracionStack}
-        options={{ headerTitle: '' }} // Título personalizado
+     
+     <Stack.Navigator initialRouteName="Login">
+        {/* Coloca la pantalla de Login como la primera ruta */}
+        <Stack.Screen 
+          name="Login" 
+          component={Login}
+          options={{ headerShown: false }} // Opcional: Oculta la barra de navegación para esta pantalla
         />
-      </Tab.Navigator>
+        {/* El resto de tus pantallas */}
+        <Stack.Screen 
+          name="NavegacionTab" 
+          component={NavegacionTab}
+          options={{ headerShown: false }}
+        />
+
+      <Stack.Screen name="Inicio" component={Inicio} />
+
+      <Stack.Screen name="Configuracion" component={Configuracion} />
+      <Stack.Screen name="HistorialActividades" component={HistorialActividades} />
+      <Stack.Screen name="PerfilUsuario" component={PerfilUsuario} />
+      <Stack.Screen name="Chatbot" component={Chatbot} />
+      <Stack.Screen name="ConsejosSeguridad" component={ConsejosSeguridad} />
+      <Stack.Screen name="Alerta" component={Alerta} />
+      <Stack.Screen name="Mapa" component={Mapa} />
+
+      
+      <Stack.Screen 
+          name="RegistroUsuarios" 
+          component={RegistroUsuarios}
+          options={{ headerShown: true, title: "Registro de Usuarios" }} // Opcional: Muestra la barra de navegación con un título
+        />
+      <Stack.Screen name="CerrarSesion" component={CerrarSesion} />
+
+      
+
+
+      {/* Add more screens as needed */}
+    </Stack.Navigator>
     </NavigationContainer>
   );
-};
+}
 
 export default App;
