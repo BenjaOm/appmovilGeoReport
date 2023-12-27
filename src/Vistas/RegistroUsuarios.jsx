@@ -1,43 +1,17 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Alert, TouchableOpacity, Text, ScrollView } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Alert, ScrollView } from 'react-native';
 
 const RegistroUsuarios = () => {
   const [nombre, setNombre] = useState('');
   const [edad, setEdad] = useState('');
-
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [repetirContrasena, setRepetirContrasena] = useState('');
-
   const [apellido, setApellido] = useState('');
   const [rut, setRut] = useState('');
   const [numeroDocumento, setNumeroDocumento] = useState('');
   const [telefono, setTelefono] = useState('');
-
-  
-  // Direccion como un objeto
-  const [mostrarCamposDireccion, setMostrarCamposDireccion] = useState(false);
-
-  const [direccion, setDireccion] = useState({
-    Region: '',
-    Provincia: '',
-    Comuna: '',
-    CodPostal: '',
-    Calle: '',
-    Departamento: '',
-    Torre: '',
-  });
-
-  const handleDireccionChange = (name, value) => {
-    setDireccion(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const toggleCamposDireccion = () => {
-    setMostrarCamposDireccion(!mostrarCamposDireccion);
-  };
+  const [Direccion, setDireccion] = useState('');
 
   const registrar = async () => {
     // Verifica si las contraseñas coinciden
@@ -47,7 +21,7 @@ const RegistroUsuarios = () => {
     }
 
     try {
-      const response = await fetch('http://192.168.0.8:3001/api/Registrarusuarios', {
+      const response = await fetch('http://192.168.0.9:3001/api/Registrarusuarios', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,27 +29,30 @@ const RegistroUsuarios = () => {
         body: JSON.stringify({
           nombre,
           apellido,
-          edad,
-          Rut: rut,
-          NumeroDocumento: numeroDocumento,
+          edad: parseInt(edad, 10), // Asegúrate de que la edad sea un número
           correo,
           contrasena,
+          rut, // Minúsculas para coincidir con el modelo
+          numeroDocumento, // Minúsculas para coincidir con el modelo
           telefono,
-          Direccion: direccion
-          // Asegúrate de enviar todos los campos necesarios
+          Direccion, // Mayúsculas para coincidir con el modelo
         }),
       });
+
       const data = await response.json();
 
-      if (response.status === 200) {
+      if (response.ok) {
         Alert.alert('Éxito', 'Registro completado.');
       } else {
-        Alert.alert('Error', data.message || 'Error al registrar');
+        // Aquí se muestra el mensaje de error personalizado del backend
+        Alert.alert('Error', data.message);
       }
     } catch (error) {
+      // Este error se captura si hay un problema con la red o el servidor no responde
       Alert.alert('Error', 'Error al conectar con el servidor');
     }
   };
+
   return (
     <View style={styles.container}>
     <ScrollView style={styles.scrollView}>
@@ -132,41 +109,21 @@ const RegistroUsuarios = () => {
         onChangeText={setRut}
         style={styles.input}
       />
-        <TouchableOpacity onPress={toggleCamposDireccion} style={styles.inputToggle}>
-        <Text style={styles.textPlaceholder}>Dirección</Text>
-      </TouchableOpacity>
-      {mostrarCamposDireccion && (
-        <>
-           <TextInput
-        placeholder="Región"
-        value={direccion.Region}
-        onChangeText={(text) => handleDireccionChange('Region', text)}
-        style={styles.input}
-      />
       <TextInput
-        placeholder="Provincia"
-        value={direccion.Provincia}
-        onChangeText={(text) => handleDireccionChange('Provincia', text)}
+        placeholder="Teléfono"
+        value={telefono}
+        onChangeText={setTelefono} // Esto actualiza el estado de telefono
+        style={styles.input}
+        keyboardType="phone-pad" // Si quieres abrir el teclado numérico para teléfono
+      />
+        
+   <TextInput
+        placeholder="Direccion"
+        value={Direccion}
+        onChangeText={setDireccion}
         style={styles.input}
       />
-
-      <TextInput
-        placeholder="Comuna"
-        value={direccion.Comuna}
-        onChangeText={(text) => handleDireccionChange('Comuna', text)}
-        style={styles.input}
-      />
-    
-      <TextInput
-        placeholder="Calle"
-        value={direccion.Calle}
-        onChangeText={(text) => handleDireccionChange('Calle', text)}
-        style={styles.input}
-      />
-     
-      
-        </>
-      )}
+   
 
 </ScrollView>
 

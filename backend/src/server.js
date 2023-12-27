@@ -1,79 +1,99 @@
+// server.js
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const usuarioRutas = require('./api/rutas/rutasUsuario'); // Asegúrate de que la ruta es correcta
-const router = express.Router();
-const Usuario = require('./api/modelos/usuario'); // Asegúrate de que la ruta sea correcta
-const Denuncia = require('./api/modelos/denuncias'); // Asume que tienes un modelo de Mongoose para Denuncias
-const multer = require('multer');
+const cors = require('cors');
+const axios = require('axios');
 
 const app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
+app.use(express.json());
 
-require('dotenv').config();
+const rutasDenuncias = require('./api/rutas/rutasDenuncias');
+const rutasRegistroUsuarios = require('./api/rutas/RegistroUsuarios');
+const rutasLogin = require('./api/rutas/Login');
+const rutasObtenerUsuarios = require('./api/rutas/ObtenerUsuarios');
 
-const storage = multer.memoryStorage(); // Configura Multer para guardar en memoria
-const upload = multer({ storage: multer.memoryStorage() });
-
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Conectado a MongoDB'))
-  .catch(err => console.error('Error al conectar a MongoDB', err));
-
-
-  app.use('/api', usuarioRutas); // Usa las rutas de registro de usuarios
+// Conexión a la base de datos MongoDB
+const cosmosDBURL = process.env.COSMOSDB_CONNSTR;
+mongoose.connect(cosmosDBURL)
+  .then(() => console.log('Conectado a Azure Cosmos DB'))
+  .catch(err => console.error('Error al conectar a Azure Cosmos DB', err));
 
 
-  app.post('/api/login', async (req, res) => {
-    try {
-      const { correo, contrasena } = req.body;
-      // Busca un usuario por correo
-      const user = await Usuario.findOne({ correo: correo });
+
+  /*
+  console.log(process.env.OPENAI_API_KEY) 
+
+  const MAX_RETRIES = 5; // Máximo número de reintentos
+  const BASE_DELAY = 500; // Tiempo de espera inicial en milisegundos
   
-      if (user && user.contrasena === contrasena) {
-        res.status(200).json({ message: 'Inicio de sesión exitoso', user });
-      } else {
-        res.status(401).json({ message: 'Credenciales incorrectas' });
-      }
-    } catch (error) {
-      res.status(500).json({ message: 'Error del servidor', error: error.message });
-    }
-  });
-
-
-
-  app.post('/api/denuncias', upload.single('foto'), async (req, res) => {
+  const callOpenAiApi = async (userInput, retryCount = 0) => {
     try {
-      const {
-        descripcion,
-        tipoDelito,
-        informacionAdicional,
-        usuario,
-        ubicacion,
-        constatacionLesiones,
-        estado,
-      } = req.body;
-      const foto = req.file ? req.file.path : null;
-  
-      const nuevaDenuncia = new Denuncia({
-        descripcion,
-        tipoDelito,
-        ubicacion,
-        informacionAdicional,
-        fotoUrl: foto,
-        usuario,
-        constatacionLesiones,
-        estado,
+      const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+        model: "gpt-3.5-turbo",
+        messages: [
+          {"role": "system", "content": "You are a helpful assistant."},
+          {"role": "user", "content": userInput}
+        ]
+      }, {
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          'OpenAI-Organization': 'org-WNDhkc2e7JNVsz2BDvvnm41F'
+
+        }
       });
-  
-      await nuevaDenuncia.save();
-      res.status(200).send({ message: 'Denuncia registrada con éxito' });
+      return response.data.choices[0].message.content;
     } catch (error) {
-      res.status(500).send({ message: 'Error al registrar la denuncia', error: error.message });
+      if (error.response && error.response.status === 429 && retryCount < MAX_RETRIES) {
+        // Esperar exponencialmente más tiempo en cada reintento
+        const delay = BASE_DELAY * Math.pow(2, retryCount);
+        console.log(`Esperando ${delay} ms antes del reintento...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return callOpenAiApi(userInput, retryCount + 1);
+      } else {
+        // Relanzar el error si no es un error 429 o hemos alcanzado el número máximo de reintentos
+        throw error;
+      }
     }
-  });
+  };
+
+ */
+  /*
+  // Ejemplo de cómo usar la función
+  callOpenAiApi("Hola, ¿cómo estás?")
+    .then(response => console.log(response))
+    .catch(error => console.error('Error al llamar a la API:', error));
+   */
   
-  
-app.listen(3001, () => {
-  console.log('Servidor corriendo en http://localhost:3001');
-});
+    app.use('/api/usuarios', rutasObtenerUsuarios);
+
+  app.use('/api', rutasLogin);
+
+
+  app.use('/Denuncias', rutasDenuncias);
+
+
+  app.use('/api/Registrarusuarios', rutasRegistroUsuarios);
+
+const PORT = process.env.PORT || 3002;
+app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
+console.log('Rutas cargadas:', app._router.stack); // Esto mostrará todas las rutas cargadas en la aplicación
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

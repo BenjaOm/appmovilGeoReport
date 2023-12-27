@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "appmovil",
-    "slug": "appmovil",
+    "name": "GeoReport",
+    "slug": "georeport",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/iconoappmovil2.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/pantallacarga.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

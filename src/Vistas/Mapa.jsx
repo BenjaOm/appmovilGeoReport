@@ -17,7 +17,9 @@ const Mapa = () => {
   const [selectedLayer, setSelectedLayer] = useState('none');
   const [showTraffic, setShowTraffic] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
+  const [ubicacionActual, setUbicacion] = useState(null); // Cambiado a objeto de ubicación
   const mapRef = useRef(null);
+  const [selectedLocation, setSelectedLocation] = useState(null); // Add state for selected location
 
   useEffect(() => {
     const getLocation = async () => {
@@ -31,6 +33,7 @@ const Mapa = () => {
         { accuracy: Location.Accuracy.High, timeInterval: 1000 },
         (newLocation) => {
           setLocation(newLocation.coords);
+          setUbicacion({ latitude: newLocation.coords.latitude, longitude: newLocation.coords.longitude }); // Actualizar ubicación en tiempo real
         }
       );
       setWatchId(id);
@@ -46,13 +49,18 @@ const Mapa = () => {
   }, []);
 
   const handleAlertPress = () => {
-    if (location) {
-      navigation.navigate('Alerta', { ubicacionActual: `${location.latitude}, ${location.longitude}` });
+    if (selectedLocation) {
+      navigation.navigate('Alerta', { ubicacionActual: selectedLocation });
     } else {
-      Alert.alert('Ubicación no disponible', 'No se puede obtener la ubicación actual.');
+      Alert.alert('Ubicación no seleccionada', 'Por favor, selecciona una ubicación en el mapa.');
     }
   };
-  
+
+  const handleMapPress = (event) => {
+    const { coordinate } = event.nativeEvent;
+    setSelectedLocation(coordinate);
+  };
+
   const handleLayerPress = () => {
     setIsLayerModalVisible(true);
   };
@@ -134,7 +142,15 @@ const Mapa = () => {
           }}
           provider="google"
           showsUserLocation
+          onPress={handleMapPress} // Add onPress event handler to the MapView
+
         >
+          {selectedLocation && ( // Display a marker if a location is selected
+          <Marker
+            coordinate={selectedLocation}
+            title="Ubicación Seleccionada"
+          />
+        )}
           <Marker
             coordinate={{
               latitude: location.latitude,

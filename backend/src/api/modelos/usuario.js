@@ -1,25 +1,17 @@
 const mongoose = require('mongoose');
-
-const direccionSchema = new mongoose.Schema({
-  Region: String,
-  Provincia: String,
-  Comuna: String,
-  CodPostal: String,
-  Calle: String,
-  Departamento: String,
-  Torre: String,
-});
+const bcrypt = require('bcrypt');
 
 const usuarioSchema = new mongoose.Schema({
-  nombre: String,
-  edad: String,
-  apellido: String,
-  Rut: String,
-  NumeroDocumento: String,
-  correo: String,
-  contrasena: String,
-  telefono: String,
-  Direccion: direccionSchema,
+  nombre: { type: String, required: true },
+  apellido: { type: String, required: true },
+  edad: { type: Number, required: true },
+  correo: { type: String, required: true, unique: true },
+  contrasena: { type: String, required: true },
+  rut: { type: String, required: true },
+  numeroDocumento: { type: String, required: true },
+  telefono: { type: String, required: true },
+  Direccion: { type: String, required: true }
 });
 
-module.exports = mongoose.model('Usuarios', usuarioSchema, 'Usuarios');
+
+module.exports = mongoose.model('Usuario', usuarioSchema);

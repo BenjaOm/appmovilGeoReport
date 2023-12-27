@@ -7,6 +7,7 @@ import Mapa from '../Vistas/Mapa';
 import Configuracion from '../Vistas/Configuracion';
 import Alerta from '../Vistas/Alerta';
 import Chatbot from '../Vistas/Chatbot';
+import MenuDenuncias from '../Vistas/MenuDenuncias';
 
 const Tab = createBottomTabNavigator();
 
@@ -32,9 +33,12 @@ const NavegacionTab = () => {
             case 'Configuracion':
               iconName = 'settings';
               break;
+              case 'MenuDenuncias':
+                iconName = 'menu'; // Cambiar 'menú' por 'menu' con tilde
+                break;
             // Añadir más casos para otros tabs si es necesario
           }
-          return <MaterialIcons name={iconName} size={focused ? 32 : 28} color={color} />;
+          return <MaterialIcons name={iconName} size={30} color={color} />;
         },
         tabBarActiveTintColor: '#007AFF', // Un color activo más vibrante
         tabBarInactiveTintColor: '#8E8E93', // Un color inactivo más neutro
@@ -62,6 +66,8 @@ const NavegacionTab = () => {
       <Tab.Screen name="Mapa" component={Mapa} options={{ tabBarLabel: 'Mapa' }} />
       <Tab.Screen name="Alerta" component={Alerta} options={{ tabBarLabel: 'Alerta' }} />
       <Tab.Screen name="Chatbot" component={Chatbot} options={{ tabBarLabel: 'Chatbot' }} />
+      <Tab.Screen name="MenuDenuncias" component={MenuDenuncias} options={{ tabBarLabel: 'Menú' }} />
+
       <Tab.Screen name="Configuracion" component={Configuracion} options={{ tabBarLabel: 'Configuración' }} />
     </Tab.Navigator>
   );

@@ -1,31 +1,49 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-
-// Importa la función `useNavigation` de React Navigation
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+
+import { useAuth } from '../Componentes/Autenticacion';
 
 const Login = () => {
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
-  const [claveUnica, setClaveUnica] = useState('');
   const [mostrarClaveUnica, setMostrarClaveUnica] = useState(false);
-  const [credencial, setCredencial] = useState('');
 
-  // Obtiene la instancia de navegación
+  const { signIn } = useAuth();
   const navigation = useNavigation();
+ 
+  const handleLogin = async () => {
+    const api = axios.create({
+      baseURL: 'http://192.168.0.9:3001/api',
+    });
+  
+    try {
+      const response = await api.post('/login', {
+        correo,
+        contrasena,
+      });
 
-  const handleLogin = () => {
-    // Aquí puedes agregar la lógica de autenticación local si es necesario
-    if (correo === 'Erick' && contrasena === '123') {
-      console.log('Inicio de sesión exitoso');
-      navigation.navigate('Inicio'); // Navega a la pantalla de inicio
-      navigation.navigate('NavegacionTab');
-    } else {
-      Alert.alert('Error', 'Credenciales incorrectas');
+      if (response.data.token) {
+        console.log('Inicio de sesión exitoso');
+        signIn(response.data.token);
+        navigation.navigate('Inicio');
+        navigation.navigate('NavegacionTab');
+
+      } else {
+        Alert.alert('Error', 'Inicio de sesión fallido');
+      }
+    }catch (error) {
+      console.error(error.response || error);
+      Alert.alert('Error', error.response?.data?.mensaje || 'Hubo un problema al iniciar sesión');
     }
+    
+    
   };
+
+
   const handleNavigateToRegister = () => {
-    navigation.navigate('RegistroUsuarios');
+    navigation.navigate('RegistroUsuarios'); // Asegúrate de tener esta ruta en tu Navigator
   };
 
   return (
@@ -34,16 +52,16 @@ const Login = () => {
       <TextInput
         style={styles.input}
         placeholder="Correo electrónico"
-        onChangeText={setCorreo} // Actualiza el estado de correo
-        value={correo}           // Usa el estado de correo
-        keyboardType="email-address" // Teclado optimizado para correos electrónicos
+        onChangeText={setCorreo}
+        value={correo}
+        keyboardType="email-address"
       />
       <TextInput
         style={styles.input}
         placeholder="Contraseña"
         secureTextEntry
-        onChangeText={setContrasena} // Actualiza el estado de contrasena
-        value={contrasena}           // Usa el estado de contrasena
+        onChangeText={setContrasena}
+        value={contrasena}
       />
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Iniciar Sesión</Text>
@@ -54,7 +72,6 @@ const Login = () => {
       >
         <Text style={styles.buttonText}>{mostrarClaveUnica ? "Volver" : "Clave Única"}</Text>
       </TouchableOpacity>
-
       <TouchableOpacity 
         style={styles.button} 
         onPress={handleNavigateToRegister}
@@ -64,6 +81,7 @@ const Login = () => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
